@@ -11,6 +11,6 @@ class AllPosts(Resource):
 
 
 @posts_ns.route('/<int:post_id>')
-class Login(Resource):
+class SinglePost(Resource):
     def get(self, post_id):
         pass
