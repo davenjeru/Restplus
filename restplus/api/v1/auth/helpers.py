@@ -23,12 +23,12 @@ def extract_auth_data(resource):
     password = payload.get('password')
     validate('password', password, namespace)
 
-    confirm_password = payload.get('confirm_password')
-    validate('confirm_password', confirm_password, namespace)
-
     if api.url_for(resource) == url_for(api.endpoint('auth_login')):
         return email, password
     elif api.url_for(resource) == url_for(api.endpoint('auth_register')):
+        confirm_password = payload.get('confirm_password')
+        validate('confirm_password', confirm_password, namespace)
+
         if password != confirm_password:
             namespace.abort(400, 'passwords do not match')
 
@@ -60,21 +60,15 @@ def get_auth_namespace(api, resource):
 
 
 def validate(name, item, namespace):
-    if name == 'email':
-        if not item:
-            namespace.abort(400, 'missing \'email\' parameter')
+    if not item:
+        namespace.abort(400, 'missing \"{0}\" parameter'.format(name))
 
+    if name == 'email':
         if not bool(email_pattern.match(item)):
             namespace.abort(400, 'email address syntax is invalid')
     elif name == 'password':
-        if not item:
-            namespace.abort(400, 'missing \'password\' parameter')
-
         if not bool(password_pattern.match(item)):
             namespace.abort(400, 'password syntax is invalid')
     elif name == 'confirm_password':
-        if not item:
-            namespace.abort(400, 'missing \'confirm_password\' parameter')
-
         if not bool(password_pattern.match(item)):
             namespace.abort(400, 'please confirm password using the password syntax guidelines provided')
