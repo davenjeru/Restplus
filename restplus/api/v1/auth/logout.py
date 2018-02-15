@@ -1,7 +1,8 @@
-from flask import url_for
 from flask_login import current_user, logout_user
 from flask_restplus import Resource
 from flask_restplus.namespace import Namespace
+
+from restplus.api.v1.auth.helpers import generate_auth_output
 
 auth_ns = Namespace('auth')
 
@@ -16,14 +17,10 @@ class Logout(Resource):
         Makes use of Flask-Login
 
         """
-        api = self.api
         try:
-            output = {
-                'user': {'email': current_user.email,
-                         'url': url_for(api.endpoint('users_single_user'), user_id=current_user.id)},
-                'message': 'user logged out successfully'}
+            output = generate_auth_output(self, current_user)
             logout_user()
-            return api.make_response(output, 200)
+            return self.api.make_response(output, 200)
         except AttributeError:
             logout_user()
             auth_ns.abort(400, 'no user in session')

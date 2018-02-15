@@ -2,7 +2,7 @@ from flask import url_for
 from flask_restplus import Resource, fields
 from flask_restplus.namespace import Namespace
 
-from restplus.api.v1.auth.helpers import extract_auth_data
+from restplus.api.v1.auth.helpers import extract_auth_data, generate_auth_output
 from restplus.models import User, users_list
 
 auth_ns = Namespace('auth')
@@ -33,14 +33,7 @@ class Register(Resource):
         5. Password should have at least one of these special characters !@#$%^;*()_+}{:'?/.,
 
         """
-        api = self.api
-        namespace = None
-        for a_namespace in api.namespaces:
-            if a_namespace.path in api.url_for(self):
-                namespace = a_namespace
-                break
-
-        email, password, confirm_password = extract_auth_data(namespace, api.url_for(self))
+        email, password, confirm_password = extract_auth_data(self)
 
         for a_user in users_list:
             if email == a_user.email:
@@ -49,12 +42,9 @@ class Register(Resource):
         created_user = User(email, password)
         created_user.save()
 
-        output = {
-            'user': {'email': created_user.email,
-                     'url': url_for(api.endpoint('users_single_user'), user_id=created_user.id)},
-            'message': 'user created successfully'}
+        output = generate_auth_output(self, created_user)
 
-        response = api.make_response(output, 201)
-        response.headers['location'] = url_for(api.endpoint('users_single_user'), user_id=created_user.id)
+        response = self.api.make_response(output, 201)
+        response.headers['location'] = url_for(self.api.endpoint('users_single_user'), user_id=created_user.id)
 
         return response

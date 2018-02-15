@@ -1,9 +1,8 @@
-from flask import url_for
 from flask_login import login_user, LoginManager, current_user
 from flask_restplus import Resource, fields
 from flask_restplus.namespace import Namespace
 
-from restplus.api.v1.auth.helpers import extract_auth_data
+from restplus.api.v1.auth.helpers import extract_auth_data, generate_auth_output
 from restplus.models import users_list
 
 auth_ns = Namespace('auth')
@@ -43,28 +42,17 @@ class Login(Resource):
 
         """
         try:
-            return {'message': current_user.email + ' is currently logged in'}
+            return {'message': current_user.email + ' is currently logged in'}, 400
         except AttributeError:
             pass
 
-        api = self.api
-        namespace = None
-        for a_namespace in api.namespaces:
-            if a_namespace.path in api.url_for(self):
-                namespace = a_namespace
-                break
-
-        email, password = extract_auth_data(namespace, api.url_for(self))
+        email, password = extract_auth_data(self)
         for a_user in users_list:
             if email == a_user.email:
                 if a_user.authenticate(password):
                     login_user(a_user)
-                    output = {
-                        'user': {'email': current_user.email,
-                                 'url': url_for(api.endpoint('users_single_user'), user_id=current_user.id)},
-                        'message': 'user logged in successfully'}
-
-                    response = api.make_response(output, 200)
+                    output = generate_auth_output(self, a_user)
+                    response = self.api.make_response(output, 200)
                     return response
                 else:
                     auth_ns.abort(401, 'invalid password')
