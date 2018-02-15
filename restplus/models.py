@@ -1,6 +1,7 @@
 import re
 
-from werkzeug.security import generate_password_hash
+from flask_login import UserMixin
+from werkzeug.security import generate_password_hash, check_password_hash
 
 users_list = []
 
@@ -8,7 +9,7 @@ email_pattern = re.compile(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)"
 password_pattern = re.compile(r"(?=^.{12,80}$)(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^;*()_+}{:'?/.,])(?!.*\s).*$")
 
 
-class User(object):
+class User(UserMixin, object):
     """
     This is the user class.
     Defines a user and all actions that can be done by it.
@@ -24,3 +25,9 @@ class User(object):
     def save(self):
         User.id += 1
         users_list.append(self)
+
+    def get_id(self):
+        return chr(self.id)
+
+    def authenticate(self, password):
+        return check_password_hash(self.password, password)
