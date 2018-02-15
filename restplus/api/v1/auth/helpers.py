@@ -42,11 +42,11 @@ def generate_auth_output(resource, user):
                  'url': url_for(api.endpoint('users_single_user'), user_id=user.id)}}
 
     if api.url_for(resource) == url_for(api.endpoint('auth_register')):
-        output_dict['message'] = 'user logged in successfully'
+        output_dict['message'] = 'user registered successfully'
     elif api.url_for(resource) == url_for(api.endpoint('auth_login')):
         output_dict['message'] = 'user logged in successfully'
     elif api.url_for(resource) == url_for(api.endpoint('auth_logout')):
-        output_dict['message'] = 'user logged in successfully'
+        output_dict['message'] = 'user logged out successfully'
 
     return output_dict
 
