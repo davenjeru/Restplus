@@ -34,7 +34,7 @@ class SingleUserAllPosts(Resource):
         check_id_availability(self, user_id, users_list, 'user')
 
         if current_user.id != user_id:
-            users_ns.abort(401)
+            users_ns.abort(403)
 
         title, body = extract_post_data(self)
         for a_post in posts_list:
