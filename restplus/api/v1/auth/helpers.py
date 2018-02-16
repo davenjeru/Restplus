@@ -1,7 +1,6 @@
 from flask import url_for
 
-from restplus.api.v1.helpers import safe_user_output
-from restplus.models import password_pattern, email_pattern
+from restplus.api.v1.helpers import safe_user_output, validate, get_namespace, json_checker
 
 
 def extract_auth_data(resource):
@@ -13,9 +12,8 @@ def extract_auth_data(resource):
     :rtype: tuple
     """
     api = resource.api
-    namespace = get_auth_namespace(api, resource)
-    if not api.payload:
-        namespace.abort(415, 'request data not in json format')
+    namespace = get_namespace(api, resource)
+    json_checker(api, namespace)
 
     payload = api.payload
     email = payload.get('email')
@@ -49,25 +47,3 @@ def generate_auth_output(resource, user):
 
     return output_dict
 
-
-def get_auth_namespace(api, resource):
-    for a_namespace in api.namespaces:
-        # default namespace has '' as path
-        # the if statement below takes care of this
-        if a_namespace.path and a_namespace.path in api.url_for(resource):
-            return a_namespace
-
-
-def validate(name, item, namespace):
-    if not item:
-        namespace.abort(400, 'missing \"{0}\" parameter'.format(name))
-
-    if name == 'email':
-        if not bool(email_pattern.match(item)):
-            namespace.abort(400, 'email address syntax is invalid')
-    elif name == 'password':
-        if not bool(password_pattern.match(item)):
-            namespace.abort(400, 'password syntax is invalid')
-    elif name == 'confirm_password':
-        if not bool(password_pattern.match(item)):
-            namespace.abort(400, 'please confirm password using the password syntax guidelines provided')
