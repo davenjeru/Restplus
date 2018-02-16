@@ -51,10 +51,7 @@ def validate(name, item, namespace):
 
 
 def validate_title_or_body(name, item, namespace):
-    if name == 'title':
-        check_length(name, item, namespace)
-    elif name == 'body':
-        check_length(name, item, namespace)
+    check_length(name, item, namespace)
 
     if item[0] not in list(string.ascii_letters) + list(string.digits):
         namespace.abort(400, 'please enter a valid {0}'.format(name))
@@ -123,6 +120,6 @@ def check_id_availability(resource, the_id, a_list, context):
 
     for an_item in a_list:
         if an_item.id == the_id:
-            break
+            return an_item
     else:
         namespace.abort(400, '{0} not found!'.format(context))
