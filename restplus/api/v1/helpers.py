@@ -115,3 +115,14 @@ def check_length(name, item, namespace):
 
         if len(item) > 500:
             namespace.abort(400, 'body too long')
+
+
+def check_id_availability(resource, the_id, a_list, context):
+    api = resource.api
+    namespace = get_namespace(api, resource)
+
+    for an_item in a_list:
+        if an_item.id == the_id:
+            break
+    else:
+        namespace.abort(400, '{0} not found!'.format(context))
