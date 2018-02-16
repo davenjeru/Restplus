@@ -31,3 +31,7 @@ class User(UserMixin, object):
 
     def authenticate(self, password):
         return check_password_hash(self.password, password)
+
+    @property
+    def serialize(self):
+        return {'email': self.email}

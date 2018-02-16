@@ -1,5 +1,6 @@
 from flask import url_for
 
+from restplus.api.v1.helpers import safe_user_output
 from restplus.models import password_pattern, email_pattern
 
 
@@ -37,9 +38,7 @@ def extract_auth_data(resource):
 
 def generate_auth_output(resource, user):
     api = resource.api
-    output_dict = {
-        'user': {'email': user.email,
-                 'url': url_for(api.endpoint('users_single_user'), user_id=user.id)}}
+    output_dict = dict(user=safe_user_output(resource, user))
 
     if api.url_for(resource) == url_for(api.endpoint('auth_register')):
         output_dict['message'] = 'user registered successfully'
