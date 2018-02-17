@@ -1,8 +1,10 @@
-from restplus.api.v1.helpers import validate, get_namespace, json_checker, safe_post_output
-from restplus.models import UpdateError
+from flask_restplus import Resource
+
+from restplus.models import UpdateError, Post, User
+from ..helpers import validate, get_namespace, json_checker, safe_post_output
 
 
-def extract_post_data(resource, method):
+def extract_post_data(resource: Resource, method: str):
     api = resource.api
     namespace = get_namespace(api, resource)
     json_checker(api, namespace)
@@ -26,7 +28,7 @@ def extract_post_data(resource, method):
     return title, body
 
 
-def generate_post_output(resource, post, method):
+def generate_post_output(resource: Resource, post: Post, method: str):
     output_dict = dict(post=safe_post_output(resource, post))
 
     if resource.endpoint == 'users_single_user_all_posts':
@@ -39,7 +41,7 @@ def generate_post_output(resource, post, method):
     return output_dict
 
 
-def patch_post(resource, item_pair, user, post):
+def patch_post(resource, item_pair: tuple, user: User, post: Post):
     api = resource.api
     namespace = get_namespace(api, resource)
     name, item = item_pair

@@ -5,7 +5,7 @@ from flask_restplus.namespace import Namespace
 
 from restplus.api.v1.helpers import check_id_availability
 from restplus.api.v1.users.helpers import extract_post_data, generate_post_output, safe_post_output
-from restplus.models import users_list, posts_list
+from restplus.models import users_list, posts_list, User
 
 users_ns = Namespace('users')
 post_model = users_ns.model('post_model', {
@@ -19,7 +19,7 @@ post_model = users_ns.model('post_model', {
 class SingleUserAllPosts(Resource):
 
     def get(self, user_id):
-        check_id_availability(self, user_id, users_list, 'user')
+        check_id_availability(self, user_id, users_list, str(User.__name__))
         my_posts = []
         for a_post in posts_list:
             if a_post.user_id == user_id:
@@ -31,12 +31,12 @@ class SingleUserAllPosts(Resource):
     @users_ns.expect(post_model)
     @login_required
     def post(self, user_id):
-        check_id_availability(self, user_id, users_list, 'user')
+        check_id_availability(self, user_id, users_list, str(User.__name__))
 
         if current_user.id != user_id:
             users_ns.abort(403)
 
-        title, body = extract_post_data(self, 'post')
+        title, body = extract_post_data(self, str(self.post.__name__))
         for a_post in posts_list:
             if a_post.title == title and a_post.body == body:
                 users_ns.abort(400, 'post already exists')
