@@ -41,9 +41,9 @@ class SingleUserSinglePost(Resource):
         title, body = extract_post_data(self, 'patch')
 
         if title:
-            this_post = patch_post(self, 'title', title, current_user, this_post)
+            this_post = patch_post(self, ('title', title,), current_user, this_post)
         if body:
-            this_post = patch_post(self, 'body', body, current_user, this_post)
+            this_post = patch_post(self, ('body', body,), current_user, this_post)
 
         response = self.api.make_response(generate_post_output(self, this_post, 'patch'), 200)
         response.headers['location'] = self.api.url_for(SingleUserSinglePost, user_id=user_id, post_id=post_id)

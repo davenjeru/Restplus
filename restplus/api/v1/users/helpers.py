@@ -39,10 +39,10 @@ def generate_post_output(resource, post, method):
     return output_dict
 
 
-def patch_post(resource, name, item, user, post):
+def patch_post(resource, item_pair, user, post):
     api = resource.api
     namespace = get_namespace(api, resource)
-
+    name, item = item_pair
     try:
         modified_post = user.update_post(name, item, post)
         return modified_post
