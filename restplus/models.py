@@ -43,6 +43,9 @@ class User(UserMixin, object):
         my_post.save()
         return my_post
 
+    def update_post(self, name, item, post):
+        return post.update(self, name, item)
+
 
 class Post(object):
     id = 1
@@ -59,7 +62,27 @@ class Post(object):
         Post.id += 1
         posts_list.append(self)
 
+    def update(self, user, name, new_item):
+        if user.id != self.user_id:
+            raise UpdateError('this post does not belong to the selected user')
+        if name == 'title':
+            if self.title == new_item:
+                raise UpdateError('title given matches the previous title')
+            self.title = new_item
+        elif name == 'body':
+            if self.body == new_item:
+                raise UpdateError('body given matches the previous body')
+            self.body = new_item
+
+        self.last_modified = datetime.datetime.now()
+        return self
+
     @property
     def serialize(self):
         return dict(title=self.title, body=self.body, created_on=str(self.created_on),
-                    last_modified=self.last_modified)
+                    last_modified=str(self.last_modified))
+
+
+class UpdateError(AssertionError):
+    def __init__(self, *args):
+        AssertionError.__init__(self, *args)

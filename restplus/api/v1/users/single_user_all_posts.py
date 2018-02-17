@@ -36,7 +36,7 @@ class SingleUserAllPosts(Resource):
         if current_user.id != user_id:
             users_ns.abort(403)
 
-        title, body = extract_post_data(self)
+        title, body = extract_post_data(self, 'post')
         for a_post in posts_list:
             if a_post.title == title and a_post.body == body:
                 users_ns.abort(400, 'post already exists')

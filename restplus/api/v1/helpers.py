@@ -53,7 +53,7 @@ def validate(name, item, namespace):
 def validate_title_or_body(name, item, namespace):
     check_length(name, item, namespace)
 
-    if item[0] not in list(string.ascii_letters) + list(string.digits):
+    if item[0] not in list(string.ascii_letters) + list(string.digits) + ['\'', '\"', '(']:
         namespace.abort(400, 'please enter a valid {0}'.format(name))
 
     if str(item[-1]) not in list(string.ascii_letters) + list(string.digits) + list('\'\").?!'):
@@ -72,8 +72,6 @@ def validate_title_or_body(name, item, namespace):
                    'suggestion': 'did you mean "{0}" instead?'.format(suggestion)}
         namespace.abort(400, message)
 
-    return True
-
 
 def check_subsequent_punctuations(list_of_words):
     for word in list_of_words[:]:
@@ -83,6 +81,8 @@ def check_subsequent_punctuations(list_of_words):
         char_list = list(word)
         for i in range(len(char_list) - 1):
             if char_list[i] in string.punctuation and char_list[i] != '.':
+                if char_list[i] in ['!', '?', '.'] and char_list[i + 1] in ['\'', '\"']:
+                    continue
                 if char_list[i + 1] in string.punctuation and char_list[i] != '.':
                     return False
     else:
