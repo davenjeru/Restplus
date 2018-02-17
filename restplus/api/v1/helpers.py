@@ -61,12 +61,12 @@ def validate_title_or_body(name, item, namespace):
 
     item_words = item.split(' ')
 
-    unwanted_spaces, item_words = check_for_unwanted_spaces(item_words)
+    no_unwanted_spaces, item_words = check_for_unwanted_spaces(item_words)
 
     if not check_subsequent_punctuations(item_words):
         namespace.abort(400, 'please enter a valid {0}'.format(name))
 
-    if not unwanted_spaces:
+    if not no_unwanted_spaces:
         suggestion = ' '.join(item_words)
         message = {'error': 'please input a valid {0}'.format(name),
                    'suggestion': 'did you mean "{0}" instead?'.format(suggestion)}
@@ -90,13 +90,13 @@ def check_subsequent_punctuations(list_of_words):
 
 
 def check_for_unwanted_spaces(list_of_words):
-    unwanted_spaces = True
+    no_unwanted_spaces = True
     for word in list_of_words[:]:
         if not word:
             list_of_words.remove(word)
-            unwanted_spaces = False
+            no_unwanted_spaces = False
 
-    return unwanted_spaces, list_of_words
+    return no_unwanted_spaces, list_of_words
 
 
 def check_length(name, item, namespace):
