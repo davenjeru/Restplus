@@ -18,15 +18,21 @@ post_model = users_ns.model('post_model', {
 
 class SingleUserAllPosts(Resource):
 
-    def get(self, user_id: int):
-        check_id_availability(self, user_id, users_list, str(User.__name__))
-        my_posts = []
+    def my_posts(self, user_id: int):
+        my_posts_list = []
+        my_posts_list_output = []
         for a_post in posts_list:
             if a_post.user_id == user_id:
                 post_dict = safe_post_output(self, a_post)
                 post_dict.pop('author_url')
-                my_posts.append(post_dict)
-        return dict(posts=my_posts)
+                my_posts_list_output.append(post_dict)
+                my_posts_list.append(a_post)
+        return my_posts_list, my_posts_list_output
+
+    def get(self, user_id: int):
+        check_id_availability(self, user_id, users_list, str(User.__name__))
+        my_posts_list, my_posts_list_output = self.my_posts(user_id)
+        return dict(posts=my_posts_list_output)
 
     @users_ns.expect(post_model)
     @login_required
@@ -48,5 +54,19 @@ class SingleUserAllPosts(Resource):
                                                user_id=post.user_id, post_id=post.id)
         return response
 
+    @login_required
     def delete(self, user_id: int):
-        pass
+        check_id_availability(self, user_id, users_list, str(User.__name__))
+
+        if current_user.id != user_id:
+            users_ns.abort(403)
+
+        my_posts_list, my_posts_list_output = self.my_posts(user_id)
+
+        for a_post in my_posts_list:
+            try:
+                current_user.delete_post(a_post)
+            except AssertionError as a:
+                users_ns.abort(400, a.args[0])
+
+        return None, 204
