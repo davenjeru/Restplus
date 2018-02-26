@@ -13,7 +13,7 @@ users_ns = Namespace('users')
 
 
 class SingleUserSinglePost(Resource):
-    def get(self, user_id, post_id):
+    def get(self, user_id: int, post_id: int):
         check_id_availability(self, user_id, users_list, str(User.__name__))
         check_id_availability(self, post_id, posts_list, str(Post.__name__))
         for post in posts_list:
@@ -24,7 +24,7 @@ class SingleUserSinglePost(Resource):
 
     @login_required
     @users_ns.expect(post_model)
-    def patch(self, user_id, post_id):
+    def patch(self, user_id: int, post_id: int):
         check_id_availability(self, user_id, users_list, str(User.__name__))
         this_post = check_id_availability(self, post_id, posts_list, str(Post.__name__))
 
@@ -58,7 +58,7 @@ class SingleUserSinglePost(Resource):
         return response
 
     @login_required
-    def delete(self, user_id, post_id):
+    def delete(self, user_id: int, post_id: int):
         check_id_availability(self, user_id, users_list, str(User.__name__))
         this_post = check_id_availability(self, post_id, posts_list, str(Post.__name__))
 

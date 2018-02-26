@@ -18,7 +18,7 @@ post_model = users_ns.model('post_model', {
 
 class SingleUserAllPosts(Resource):
 
-    def get(self, user_id):
+    def get(self, user_id: int):
         check_id_availability(self, user_id, users_list, str(User.__name__))
         my_posts = []
         for a_post in posts_list:
@@ -30,7 +30,7 @@ class SingleUserAllPosts(Resource):
 
     @users_ns.expect(post_model)
     @login_required
-    def post(self, user_id):
+    def post(self, user_id: int):
         check_id_availability(self, user_id, users_list, str(User.__name__))
 
         if current_user.id != user_id:
@@ -48,5 +48,5 @@ class SingleUserAllPosts(Resource):
                                                user_id=post.user_id, post_id=post.id)
         return response
 
-    def delete(self, user_id):
+    def delete(self, user_id: int):
         pass
