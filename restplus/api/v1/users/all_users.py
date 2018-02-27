@@ -9,6 +9,9 @@ users_ns = Namespace('users')
 
 class AllUsers(Resource):
     def get(self):
+        """
+            View all users
+        """
         users = []
         for user in users_list:
             users.append(safe_user_output(self, user))

@@ -16,6 +16,9 @@ class Logout(Resource):
 
         Makes use of Flask-Login
 
+        If there is a user in session, they will be logged out, otherwise, 400 error is returned.
+        In both cases the session cookie is cleared
+
         """
         try:
             output = generate_auth_output(self, current_user)

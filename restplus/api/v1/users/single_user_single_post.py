@@ -14,6 +14,9 @@ users_ns = Namespace('users')
 
 class SingleUserSinglePost(Resource):
     def get(self, user_id: int, post_id: int):
+        """
+        View a single post from a specific user
+        """
         check_id_availability(self, user_id, users_list, str(User.__name__))
         check_id_availability(self, post_id, posts_list, str(Post.__name__))
         for post in posts_list:
@@ -24,7 +27,19 @@ class SingleUserSinglePost(Resource):
 
     @login_required
     @users_ns.expect(post_model)
+    @users_ns.response(200, 'Post modified successfully')
+    @users_ns.response(400, 'Bad request')
+    @users_ns.response(401, 'Not logged in hence unauthorized')
+    @users_ns.response(403, 'Logged in but forbidden from performing this action')
     def patch(self, user_id: int, post_id: int):
+        """
+        Modify a post
+
+        1. User should be logged in.
+        2. Your title should have between 10 and 70 characters
+        3. Your body should have between 40 and 500 characters
+        4. Duplicate posts will not be created
+        """
         check_id_availability(self, user_id, users_list, str(User.__name__))
         this_post = check_id_availability(self, post_id, posts_list, str(Post.__name__))
 
@@ -58,7 +73,18 @@ class SingleUserSinglePost(Resource):
         return response
 
     @login_required
+    @users_ns.response(204, 'Post deleted successfully')
+    @users_ns.response(400, 'Bad request')
+    @users_ns.response(401, 'Not logged in hence unauthorized')
+    @users_ns.response(403, 'Logged in but forbidden from performing this action')
     def delete(self, user_id: int, post_id: int):
+        """
+        Delete a post
+
+        1. User needs to be logged in
+        2. This deletes the post whose ID is specified on the url
+        3. This process is irreversible
+        """
         check_id_availability(self, user_id, users_list, str(User.__name__))
         this_post = check_id_availability(self, post_id, posts_list, str(Post.__name__))
 

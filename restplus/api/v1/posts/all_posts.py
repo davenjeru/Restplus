@@ -9,6 +9,13 @@ posts_ns = Namespace('posts')
 
 class AllPosts(Resource):
     def get(self):
+        """
+        View all posts
+        :return: a list of all posts under 'posts'
+
+        :rtype dict
+
+        """
         posts = []
         for post in posts_list:
             posts.append(safe_post_output(self, post))

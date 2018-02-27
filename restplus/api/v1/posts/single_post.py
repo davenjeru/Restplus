@@ -8,5 +8,10 @@ posts_ns = Namespace('posts')
 
 
 class SinglePost(Resource):
-    def get(self, post_id):
+    @posts_ns.response(200, "Success")
+    @posts_ns.response(400, "Post not found. Invalid 'post_id' provided")
+    def get(self, post_id: int):
+        """
+        View a single post
+        """
         return dict(post=safe_post_output(self, check_id_availability(self, post_id, posts_list, 'post')))

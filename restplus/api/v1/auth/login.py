@@ -38,7 +38,9 @@ class Login(Resource):
 
         Makes use of Flask-Login
 
-        Use the correct user information to login. Guidelines as stipulated in the login route should be followed
+        Use the correct user information to login. Guidelines as stipulated in the register route should be followed
+
+        Note: Only one user can be logged in per client
 
         """
         try:
